@@ -7,7 +7,7 @@
     "test": "test",
     "start": "node index.js",
     "startMon": "nodemon index.js",
-    "lint": "./node_modules/.bin/eslint ./ --fix"
+    "lint": "eslint **/*.js"
   },
   "author": "",
   "license": "ISC",

@@ -14,7 +14,12 @@ const app = express();
 dotenv.load({ path: '.env' });
 
 /** Connect to MongoDB. */
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
+if (process.env.NODE_ENV !== 'production') {
+  mongoose.connect(process.env.MONGODB_URI_DEV, { useNewUrlParser: true });
+} else {
+  mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
+}
+
 mongoose.connection.on('error', (err) => {
   console.error(err);
   console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
