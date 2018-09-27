@@ -1,12 +1,14 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const chalk = require('chalk');
 
+require('./db/models/index');
+const mongoose = require('mongoose');
 const routes = require('./routes');
 const services = require('./services');
 
 const app = express();
+
 
 /** Load environment variables from .env file, where API keys and passwords are configured. */
 dotenv.load({ path: '.env' });

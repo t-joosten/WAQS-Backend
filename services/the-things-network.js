@@ -1,16 +1,18 @@
 const ttn = require('ttn');
 
-module.exports = class TTNService {
-  constructor() {
-    console.log('TTN Service initiated');
-  }
+const mongoose = require('mongoose');
+const Log = mongoose.model('Log');
 
+module.exports = class TTNService {
   static connectToTTN(appKey, accessKey) {
     ttn.data(appKey, accessKey)
       .then((client) => {
         client.on('uplink', (devID, payload) => {
           console.log('Received uplink from', devID);
           console.log(payload);
+
+          const log = new Log({ type: 'TTN LOG', message: payload }).save();
+          console.log(log);
 
           const fields = payload.payload_fields;
 
@@ -26,4 +28,4 @@ module.exports = class TTNService {
         process.exit(1);
       });
   }
-}
+};
