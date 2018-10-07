@@ -1,14 +1,16 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const chalk = require('chalk');
+const cors = require('cors');
 
 require('./db/models/index');
 const mongoose = require('mongoose');
 const routes = require('./routes');
+const apiRoutes = require('./api/v1/routes');
 const services = require('./services');
 
 const app = express();
-
+app.use(cors());
 
 /** Load environment variables from .env file, where API keys and passwords are configured. */
 dotenv.load({ path: '.env' });
@@ -30,6 +32,7 @@ mongoose.connection.on('error', (err) => {
 services.ttnService.connectToTTN(process.env.TTN_APP_ID, process.env.TTN_ACCESS_KEY);
 
 /** Connect all our routes to our application */
+app.use('/api/v1', apiRoutes);
 app.use('/', routes);
 
 app.listen(process.env.PORT || 4000, () => console.log(`App listening on port ${process.env.PORT}!`));
