@@ -1,16 +1,10 @@
-const express = require('express');
+const app = require('express')();
+const server = require('http').Server(app);
+global.io = require('socket.io')(server);
+
 const dotenv = require('dotenv');
 const chalk = require('chalk');
 const cors = require('cors');
-
-const app = express();
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-  With, Content-Type, Accept');
-  next();
-});
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
 
 require('./db/models/index');
 const mongoose = require('mongoose');
@@ -18,11 +12,19 @@ const routes = require('./routes');
 const apiRoutes = require('./api/v1/routes');
 const services = require('./services');
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
-});
 
-app.use(cors());
+/** Setup CORS */
+//const whitelist = ['http://localhost:4200', 'undefined'];
+const corsOptions = {
+  credentials: true,
+  /*origin: (origin, callback) => {
+    console.log(origin);
+    if (whitelist.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },*/
+};
+
+app.use(cors(corsOptions));
 
 /** Load environment variables from .env file, where API keys and passwords are configured. */
 dotenv.load({ path: '.env' });
@@ -47,4 +49,11 @@ services.ttnService.connectToTTN(process.env.TTN_APP_ID, process.env.TTN_ACCESS_
 app.use('/api/v1', apiRoutes);
 app.use('/', routes);
 
-app.listen(process.env.PORT || 4000, () => console.log(`App listening on port ${process.env.PORT}!`));
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+});
+
+server.listen(process.env.PORT || 4000, () => console.log(`App listening on port ${process.env.PORT}, open your browser on http://localhost:${process.env.PORT}/`));

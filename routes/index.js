@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const Log = mongoose.model('Log');
 
 router.get('/', (req, res) => {
+  io.emit('chat message', { message: 'banaan' });
+  console.log('chat message emitted');
   res.status(200).json({ message: 'Connected!' });
 });
 
