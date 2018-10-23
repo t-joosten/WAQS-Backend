@@ -3,13 +3,25 @@ const dotenv = require('dotenv');
 const chalk = require('chalk');
 const cors = require('cors');
 
+const app = express();
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-  With, Content-Type, Accept');
+  next();
+});
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
 require('./db/models/index');
 const mongoose = require('mongoose');
 const routes = require('./routes');
 const apiRoutes = require('./api/v1/routes');
 const services = require('./services');
 
-const app = express();
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
+
 app.use(cors());
 
 /** Load environment variables from .env file, where API keys and passwords are configured. */

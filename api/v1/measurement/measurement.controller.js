@@ -10,14 +10,23 @@ exports.GetMeasurements = (req, res) => {
 
 exports.GetMeasurementsByDevice = (req, res) => {
   const deviceId = req.params.device_id;
-  //const firstDate = req.params.first_date;
-  //const lastDate = req.params.last_date;
+  // const firstDate = req.params.first_date;
+  // const lastDate = req.params.last_date;
 
   Measurement
     .where('device_id', deviceId)
-    //.where('createdAt').gte(firstDate).lte(lastDate)
+    // .where('createdAt').gte(firstDate).lte(lastDate)
     .exec((err, result) => {
       if (err) res.send(err);
       res.json(result);
     });
+};
+
+exports.GetLastMeasurementByDevice = (req, res) => {
+  const deviceId = req.params.device_id;
+
+  Measurement.findOne({ device_id: deviceId }).sort({ createdAt: -1 }).exec((err, result) => {
+    if (err) res.send(err);
+    res.json(result);
+  });
 };

@@ -16,47 +16,49 @@ module.exports = class TTNService {
           const log = new Log({ type: 'TTN LOG', message: payload }).save();
           console.log(log);
 
-          Device.findOne({ appId: payload.app_id, devId: payload.dev_id }, (err, device) => {
-            if (device === null) {
-              console.log('test');
-              const newDevice = new Device({
-                name: payload.dev_id,
-                appId: payload.app_id,
-                devId: payload.dev_id,
-                hardwareSerial: payload.hardware_serial,
-              });
-              newDevice.save((err, createdDevice) => {
-                console.log(createdDevice);
-                if (createdDevice) {
+          if (payload.payload_fields) {
+            Device.findOne({ appId: payload.app_id, devId: payload.dev_id }, (err, device) => {
+              if (device === null) {
+                console.log('test');
+                const newDevice = new Device({
+                  name: payload.dev_id,
+                  appId: payload.app_id,
+                  devId: payload.dev_id,
+                  hardwareSerial: payload.hardware_serial,
+                });
+                newDevice.save((err, createdDevice) => {
                   console.log(createdDevice);
-                  const newMeasurement = new Measurement({
-                    device: createdDevice._id,
-                    values: payload.payload_fields,
-                  });
-                  newMeasurement.save((err, createdMeasurement) => {
-                    console.log(createdMeasurement);
-                  });
-                }
-              });
-            } else {
-              console.log(device);
-              const newMeasurement = new Measurement({
-                device: device._id,
-                values: payload.payload_fields,
-              });
-              newMeasurement.save((err, createdMeasurement) => {
-                console.log(createdMeasurement);
-              });
-            }
-          });
+                  if (createdDevice) {
+                    console.log(createdDevice);
+                    const newMeasurement = new Measurement({
+                      device: createdDevice._id,
+                      values: payload.payload_fields,
+                    });
+                    newMeasurement.save((err, createdMeasurement) => {
+                      console.log(createdMeasurement);
+                    });
+                  }
+                });
+              } else {
+                console.log(device);
+                const newMeasurement = new Measurement({
+                  device: device._id,
+                  values: payload.payload_fields,
+                });
+                newMeasurement.save((err, createdMeasurement) => {
+                  console.log(createdMeasurement);
+                });
+              }
+            });
 
-          const fields = payload.payload_fields;
+            const fields = payload.payload_fields;
 
-          const humidity = fields.Humidity;
-          const temperature = fields.Temperature;
+            const humidity = fields.Humidity;
+            const temperature = fields.Temperature;
 
-          console.log(`Humidity: ${humidity}`);
-          console.log(`Temperature: ${temperature}`);
+            console.log(`Humidity: ${humidity}`);
+            console.log(`Temperature: ${temperature}`);
+          }
         });
       })
       .catch((error) => {
