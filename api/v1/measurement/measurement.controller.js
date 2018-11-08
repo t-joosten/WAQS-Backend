@@ -30,3 +30,17 @@ exports.GetLastMeasurementByDevice = (req, res) => {
     res.json(result);
   });
 };
+
+exports.CreateMeasurement = async (newMeasurement) => {
+  try {
+    let measurement;
+
+    await newMeasurement.save((err, createdMeasurement) => {
+      measurement = createdMeasurement;
+    });
+
+    return measurement;
+  } catch (err) {
+    console.log(err);
+  }
+};
