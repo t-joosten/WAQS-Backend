@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
-const device = require('./measurement.controller');
+const measurement = require('./measurement.controller');
 
 // Device routes
 router.route('/')
-  .get(device.GetMeasurements);
+  .get(measurement.GetMeasurements);
 // .post(device.CreateDevice);
 
 router.route('/:id')
-  .get(device.GetMeasurementsByDevice);
+  .get(measurement.GetMeasurementsByDevice);
 
 router.route('/:id/last')
-  .get(device.GetLastMeasurementByDevice);
+  .get(measurement.GetLastMeasurementByDevice);
 
 module.exports = router;

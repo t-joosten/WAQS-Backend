@@ -8,20 +8,21 @@ const cors = require('cors');
 
 require('./db/models/index');
 const mongoose = require('mongoose');
+const Measurement = require('./api/v1/measurement/measurement.model');
 const routes = require('./routes');
 const apiRoutes = require('./api/v1/routes');
 const services = require('./services');
 
 
 /** Setup CORS */
-//const whitelist = ['http://localhost:4200', 'undefined'];
+// const whitelist = ['http://localhost:4200', 'undefined'];
 const corsOptions = {
   credentials: true,
-  /*origin: (origin, callback) => {
+  /* origin: (origin, callback) => {
     console.log(origin);
     if (whitelist.includes(origin)) return callback(null, true);
     return callback(new Error('Not allowed by CORS'));
-  },*/
+  }, */
 };
 
 app.use(cors(corsOptions));
@@ -49,9 +50,50 @@ services.ttnService.connectToTTN(process.env.TTN_APP_ID, process.env.TTN_ACCESS_
 app.use('/api/v1', apiRoutes);
 app.use('/', routes);
 
-io.on('connection', function(socket){
+app.use('/create-test-data', async (req, res) => {
+  const startDate = new Date(2018, 1, 1, 0, 0, 0);
+  const currentDate = new Date(2018, 1, 1, 0, 0, 0);
+  const endDate = new Date(2018, 11, 1, 0, 0, 0);
+
+  const deviceId = '5bec0aa848bd9a4c50fc5dd1';
+
+  for (let i = 0; i <= 300; i++) {
+    await Measurement.create({
+      device: deviceId,
+      createdAt: new Date(startDate.getTime() + (i * 86400000)),
+      values: {
+        Temperature: Math.floor((Math.random() * 100) + 1),
+      },
+    }, (err, createdMeasurement) => {
+      if (err) return console.log(err);
+      console.log(createdMeasurement);
+    });
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  /* while (currentDate < endDate) {
+    console.log(currentDate);
+    await Measurement.create({
+      device: deviceId,
+      createdAt: currentDate,
+      values: {
+        Temperature: Math.floor((Math.random() * 100) + 1),
+      },
+    }, (err, createdMeasurement) => {
+      if (err) return console.log(err);
+      console.log(createdMeasurement);
+    });
+
+    console.log('next date');
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  } */
+});
+
+io.on('connection', (socket) => {
   console.log('a user connected');
-  socket.on('disconnect', function(){
+  socket.on('disconnect', () => {
     console.log('user disconnected');
   });
 });

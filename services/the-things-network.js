@@ -13,6 +13,8 @@ module.exports = class TTNService {
     ttn.data(appKey, accessKey)
       .then((client) => {
         client.on('uplink', (devId, payload) => {
+          console.log(payload);
+
           async function checkIfDeviceExists() {
             const device = await DeviceController.CheckIfDeviceExists(payload.app_id, payload.dev_id);
             return device;
@@ -60,8 +62,8 @@ module.exports = class TTNService {
         });
       })
       .catch((error) => {
-        console.error('Error', error);
-        process.exit(1);
+        console.error(error);
+        console.error('Could not connect to The Things Network. Check your credentials.');
       });
   }
 };
