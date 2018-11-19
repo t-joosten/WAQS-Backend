@@ -55,7 +55,7 @@ app.use('/create-test-data', async (req, res) => {
   const currentDate = new Date(2018, 1, 1, 0, 0, 0);
   const endDate = new Date(2018, 11, 1, 0, 0, 0);
 
-  const deviceId = '5bec0aa848bd9a4c50fc5dd1';
+  const deviceId = '5bcf173ac23a50234880a7b4';
 
   for (let i = 0; i <= 300; i++) {
     await Measurement.create({

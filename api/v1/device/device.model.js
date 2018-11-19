@@ -14,6 +14,12 @@ const Device = new mongoose.Schema({
   hardwareSerial: {
     type: String,
   },
+  lat: {
+    type: Number,
+  },
+  long: {
+    type: Number,
+  },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
