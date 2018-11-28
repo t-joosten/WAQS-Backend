@@ -9,6 +9,7 @@ const cors = require('cors');
 require('./db/models/index');
 const mongoose = require('mongoose');
 const Measurement = require('./api/v1/measurement/measurement.model');
+const Device = require('./api/v1/device/device.model');
 const routes = require('./routes');
 const apiRoutes = require('./api/v1/routes');
 const services = require('./services');
@@ -53,42 +54,33 @@ app.use('/', routes);
 app.use('/create-test-data', async (req, res) => {
   const startDate = new Date(2018, 1, 1, 0, 0, 0);
   const currentDate = new Date(2018, 1, 1, 0, 0, 0);
-  const endDate = new Date(2018, 11, 1, 0, 0, 0);
 
-  const deviceId = '5bcf173ac23a50234880a7b4';
+  Device.create({
+    name: 'IOT Stadslab',
+    appId: 'iot_lab',
+    devId: 'device_1',
+    lat: 51.682369,
+    long: 5.295309,
+    hardwareSerial: '00E12B4CEABA61AD',
+  }, (err, createdDevice) => {
+    if (err) return console.log(err);
+    for (let i = 0; i <= 300; i += 1) {
+      Measurement.create({
+        device: createdDevice._id,
+        createdAt: new Date(startDate.getTime() + (i * 86400000)),
+        values: {
+          Temperature: Math.floor((Math.random() * 4) + 19),
+          pH: Math.floor((Math.random() * 5) + 3),
+          O2: Math.floor((Math.random() * 8) + 5),
+        },
+      }, (err, createdMeasurement) => {
+        if (err) return console.log(err);
+      });
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
 
-  for (let i = 0; i <= 300; i++) {
-    await Measurement.create({
-      device: deviceId,
-      createdAt: new Date(startDate.getTime() + (i * 86400000)),
-      values: {
-        Temperature: Math.floor((Math.random() * 100) + 1),
-      },
-    }, (err, createdMeasurement) => {
-      if (err) return console.log(err);
-      console.log(createdMeasurement);
-    });
-
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  /* while (currentDate < endDate) {
-    console.log(currentDate);
-    await Measurement.create({
-      device: deviceId,
-      createdAt: currentDate,
-      values: {
-        Temperature: Math.floor((Math.random() * 100) + 1),
-      },
-    }, (err, createdMeasurement) => {
-      if (err) return console.log(err);
-      console.log(createdMeasurement);
-    });
-
-    console.log('next date');
-
-    currentDate.setDate(currentDate.getDate() + 1);
-  } */
+    res.send('done');
+  });
 });
 
 io.on('connection', (socket) => {
