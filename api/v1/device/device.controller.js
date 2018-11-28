@@ -22,12 +22,18 @@ exports.GetDevices = (req, res) => {
   });
 };
 
-exports.CreateDevice = (req, res) => {
-  const newDevice = new Device(req.body);
-  newDevice.save((err, device) => {
-    if (err) res.send(err);
-    res.json(device);
-  });
+exports.CreateDevice = async (newDevice) => {
+  try {
+    let device;
+
+    await newDevice.save((err, createdDevice) => {
+      device = createdDevice;
+    });
+
+    return device;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 exports.UpdateDevice = (req, res) => {
@@ -36,4 +42,18 @@ exports.UpdateDevice = (req, res) => {
 
 exports.DeleteDevice = (req, res) => {
   res.json({ message: 'Delete device not implemented.' });
+};
+
+exports.CheckIfDeviceExists = async (appId, deviceId) => {
+  try {
+    let device;
+
+    await Device.findOne({ appId, devId: deviceId }, (err, res) => {
+      device = res;
+    });
+
+    return device;
+  } catch (err) {
+    console.log(err);
+  }
 };
