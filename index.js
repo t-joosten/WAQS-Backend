@@ -29,13 +29,13 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 /** Load environment variables from .env file, where API keys and passwords are configured. */
-dotenv.load({ path: '.env' });
+dotenv.load({path: '.env'});
 
 /** Connect to MongoDB. */
 if (process.env.NODE_ENV !== 'production') {
-  mongoose.connect(process.env.MONGODB_URI_DEV, { useNewUrlParser: true });
+  mongoose.connect(process.env.MONGODB_URI_DEV, {useNewUrlParser: true});
 } else {
-  mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
+  mongoose.connect(process.env.MONGODB_URI, {useNewUrlParser: true});
 }
 
 mongoose.connection.on('error', (err) => {
@@ -45,7 +45,11 @@ mongoose.connection.on('error', (err) => {
 });
 
 /** Initiate connection with The Things Network */
-services.ttnService.connectToTTN(process.env.TTN_APP_ID, process.env.TTN_ACCESS_KEY);
+try {
+  services.ttnService.connectToTTN(process.env.TTN_APP_ID, process.env.TTN_ACCESS_KEY);
+} catch (err) {
+  console.log(err);
+}
 
 /** Connect all our routes to our application */
 app.use('/api/v1', apiRoutes);
