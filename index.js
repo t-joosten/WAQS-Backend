@@ -1,19 +1,25 @@
 const app = require('express')();
 const server = require('http').Server(app);
 global.io = require('socket.io')(server);
-
-const dotenv = require('dotenv');
+require('dotenv').config();
 const chalk = require('chalk');
 const cors = require('cors');
 
 require('./db/models/index');
+const morgan = require('morgan');
 const mongoose = require('mongoose');
+const passport = require('passport');
+const bodyParser = require('body-parser');
 const Measurement = require('./api/v1/measurement/measurement.model');
 const Device = require('./api/v1/device/device.model');
 const routes = require('./routes');
 const apiRoutes = require('./api/v1/routes');
 const services = require('./services');
 
+mongoose.Promise = require('bluebird');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: 'false' }));
 
 /** Setup CORS */
 // const whitelist = ['http://localhost:4200', 'undefined'];
@@ -28,14 +34,13 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-/** Load environment variables from .env file, where API keys and passwords are configured. */
-dotenv.load({path: '.env'});
-
 /** Connect to MongoDB. */
 if (process.env.NODE_ENV !== 'production') {
-  mongoose.connect(process.env.MONGODB_URI_DEV, {useNewUrlParser: true});
+  mongoose.connect(process.env.MONGODB_URI_DEV, { useNewUrlParser: true, promiseLibrary: require('bluebird') }).then(() => console.log('connection succesful'))
+    .catch(err => console.error(err));
 } else {
-  mongoose.connect(process.env.MONGODB_URI, {useNewUrlParser: true});
+  mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, promiseLibrary: require('bluebird') }).then(() => console.log('connection succesful'))
+    .catch(err => console.error(err));
 }
 
 mongoose.connection.on('error', (err) => {
@@ -54,6 +59,8 @@ try {
 /** Connect all our routes to our application */
 app.use('/api/v1', apiRoutes);
 app.use('/', routes);
+
+app.use(passport.initialize());
 
 app.use('/create-test-data', async (req, res) => {
   const startDate = new Date(2018, 1, 1, 0, 0, 0);
