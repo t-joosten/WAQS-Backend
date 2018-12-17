@@ -9,6 +9,9 @@
     "startnodemon": "nodemon index.js",
     "lint": "eslint **/*.js"
   },
+  "engines": {
+    "node": "10.3.0"
+  }
   "author": "",
   "license": "ISC",
   "dependencies": {
