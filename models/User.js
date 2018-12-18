@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt-nodejs');
 
@@ -16,13 +17,21 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: true,
+    select: false,
   },
   role: {
     type: String,
     required: true,
     default: 'user',
   },
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
 });
+
+UserSchema.plugin(mongoosePaginate);
 
 UserSchema.pre('save', function (next) {
   const user = this;

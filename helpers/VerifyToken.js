@@ -3,9 +3,7 @@ require('dotenv').config();
 const jwtSecret = process.env.JWT_SECRET;
 
 module.exports = function verifyToken(req, res, next) {
-  console.log('verifying');
   const token = req.body.token || req.query.token || req.headers['x-access-token']
-  console.log(token);
 
   // decode token
   if (token) {
@@ -16,7 +14,6 @@ module.exports = function verifyToken(req, res, next) {
       }
       // if everything is good, save to request for use in other routes
       req.decoded = decoded;
-      console.log(decoded);
       next();
     });
   } else {

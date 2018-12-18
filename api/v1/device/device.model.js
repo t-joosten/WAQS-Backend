@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 
 const Device = new mongoose.Schema({
@@ -25,5 +26,7 @@ const Device = new mongoose.Schema({
   toJSON: { virtuals: true },
   toObject: { virtuals: true },
 });
+
+Device.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('Device', Device);

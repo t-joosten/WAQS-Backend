@@ -13,8 +13,6 @@ exports.Get = (req, res) => {
 };
 
 exports.Register = (req, res) => {
-  console.log(req.body);
-
   if (req.body.password !== req.body.confirmPassword) {
     res.json({success: false, msg: 'Passwords do not match.'});
   }

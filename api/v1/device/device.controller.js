@@ -16,10 +16,17 @@ exports.GetDeviceAndMeasurements = (req, res) => {
 };
 
 exports.GetDevices = (req, res) => {
-  Device.find({}, (err, device) => {
-    if (err) res.send(err);
-    res.json(device);
-  });
+  if (req.query.all) {
+    Device.find({}, (err, result) => {
+      if (err) res.send(err);
+      res.json(result);
+    });
+  } else {
+    Device.paginate({}, { page: req.query.page, limit: 8 }, (err, result) => {
+      if (err) res.send(err);
+      res.json(result);
+    });
+  }
 };
 
 exports.CreateDevice = async (newDevice) => {
