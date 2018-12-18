@@ -6,7 +6,6 @@ const bcrypt = require('bcrypt-nodejs');
 const UserSchema = new Schema({
   fullName: {
     type: String,
-    unique: true,
     required: true,
   },
   email: {
@@ -17,7 +16,6 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: true,
-    select: false,
   },
   role: {
     type: String,
@@ -54,6 +52,8 @@ UserSchema.pre('save', function (next) {
 });
 
 UserSchema.methods.comparePassword = function(candidatePassword, cb) {
+  console.log(this.password);
+  console.log(candidatePassword);
   bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
     if (err) return cb(err);
     cb(null, isMatch);

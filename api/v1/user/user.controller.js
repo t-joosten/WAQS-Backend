@@ -3,7 +3,7 @@ const User = require('../../../models/User');
 
 exports.GetUsers = (req, res) => {
   try {
-    User.paginate({}, { page: req.query.page, limit: 10 }, (err, result) => {
+    User.paginate({}, { select: '-password', page: req.query.page, limit: 10 }, (err, result) => {
       if (err) res.send(err);
       res.json(result);
     });
