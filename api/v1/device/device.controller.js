@@ -36,12 +36,30 @@ exports.CreateDevice = async (newDevice) => {
   }
 };
 
-exports.UpdateDevice = (req, res) => {
-  res.json({ message: 'Update device not implemented.' });
+exports.UpdateDevice = (req, res, next) => {
+  try {
+    Device.findByIdAndUpdate(req.params.id, req.body, (err, device) => {
+      if (err) {
+        res.json({ success: false, message: 'Device could not be updated.' });
+      }
+      res.json({ success: true, message: 'Device has been updated.' });
+    });
+  } catch (err) {
+    res.json({ success: false, message: 'Device could not be updated.' });
+  }
 };
 
-exports.DeleteDevice = (req, res) => {
-  res.json({ message: 'Delete device not implemented.' });
+exports.DeleteDevice = (req, res, next) => {
+  try {
+    Device.deleteOne({ _id: req.params.id }, (err) => {
+      if (err) {
+        res.json({ success: false, message: 'Device could not be deleted.' });
+      }
+      res.json({ success: true, message: 'Device has been deleted.' });
+    });
+  } catch (err) {
+    res.json({ success: false, message: 'Device could not be deleted.' });
+  }
 };
 
 exports.CheckIfDeviceExists = async (appId, deviceId) => {

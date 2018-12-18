@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const VerifyToken = require('../../../helpers/VerifyToken');
 const device = require('./device.controller');
 
 // Device routes
@@ -8,10 +9,9 @@ router.route('/')
   .get(device.GetDevices)
   .post(device.CreateDevice);
 
-router.route('/:id')
-  .get(device.GetDevice)
-  .put(device.UpdateDevice)
-  .delete(device.DeleteDevice);
+router.get('/:id', device.GetDevice);
+router.put('/:id', VerifyToken, device.UpdateDevice);
+router.delete('/:id', VerifyToken, device.DeleteDevice);
 
 router.route('/:id/measurements')
   .get(device.GetDeviceAndMeasurements);
