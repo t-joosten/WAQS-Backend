@@ -52,7 +52,7 @@ exports.Login = (req, res) => {
           // if user is found and password is right create a token
           const token = jwt.sign(user.toJSON(), jwtSecret);
           // return the information including token as JSON
-          res.json({success: true, token: `JWT ${token}`});
+          res.json({success: true, token: `${token}`});
         } else {
           res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
         }
