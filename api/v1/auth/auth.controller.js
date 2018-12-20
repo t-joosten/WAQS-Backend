@@ -31,7 +31,7 @@ exports.Register = (req, res) => {
       }
       const token = jwt.sign(user.toJSON(), jwtSecret);
       // return the information including token as JSON
-      res.json({success: true, msg: 'Successful created new user.', token: `JWT ${token}`});
+      res.json({success: true, msg: 'Successful created new user.', token: `${token}`});
     });
   }
 };
