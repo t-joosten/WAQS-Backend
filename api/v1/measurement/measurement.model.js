@@ -2,12 +2,29 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const measurementSchema = new mongoose.Schema({
-  device: { type: Schema.Types.ObjectId, ref: 'Device' },
-  values: {},
-  createdAt: { type: Date },
+  deviceId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Device',
+  },
+  gateId: {
+    type: Number,
+  },
+  measuredTypeId: {
+    type: Number,
+  },
+  value: {
+    type: Number,
+  },
+  createdAt: {
+    type: Date,
+  },
 }, {
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true },
+  toJSON: {
+    virtuals: true,
+  },
+  toObject: {
+    virtuals: true,
+  },
 });
 
 module.exports = mongoose.model('Measurement', measurementSchema);

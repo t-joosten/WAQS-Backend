@@ -21,6 +21,14 @@ const Device = new mongoose.Schema({
   long: {
     type: Number,
   },
+  deviceValuesUpdatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+  sensorValuesUpdatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
