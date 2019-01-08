@@ -2,6 +2,7 @@ const NumberConverter = require('./NumberConverter');
 
 module.exports = {
   decode(hex) {
+    const checksSucceeded = true;
     // Packet (hex size)
     const sizePackageSize = 2;
     const sizeHash = 2;
@@ -125,9 +126,29 @@ module.exports = {
       // console.log('Sensor hash:');
       // console.log(`payload: ${payloadHex}\t\t\t\t hex: ${sensorHashHex}\t\t\t\t dec: ${sensorHashDec}\t\t\t bin: ${hex2bin(sensorHashHex)}`);
 
+      console.log(this.hash(sensorValue));
+
       measurement.sensors.push(sensorValue);
     }
 
-    return measurement;
+    if (checksSucceeded) {
+      return measurement;
+    }
+    return null;
+  },
+  hash(values) {
+    let totalValue = 0;
+    let index = 0;
+
+    Object.keys(values)
+      .forEach((key) => {
+        if (key !== 'hash') {
+          totalValue += values[key];
+          index += 1;
+        }
+      });
+    console.log(totalValue);
+    console.log(index);
+    console.log(totalValue / index);
   },
 };
