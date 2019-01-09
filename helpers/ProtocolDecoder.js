@@ -2,7 +2,8 @@ const NumberConverter = require('./NumberConverter');
 
 module.exports = {
   decode(hex) {
-    const checksSucceeded = true;
+    if (hex === '') return null;
+    const hexCharsPerByte = 2;
     // Packet (hex size)
     const sizePackageSize = 2;
     const sizeHash = 2;
@@ -31,6 +32,7 @@ module.exports = {
 
     const packageSizeHex = payloadHex.slice(0, sizePackageSize);
     const packageSizeDec = NumberConverter.hex2dec(packageSizeHex);
+    const packageHexStringToHash = payloadHex.slice(0, (packageSizeDec * hexCharsPerByte) - sizeHash - sizeStop);
     payloadHex = payloadHex.slice(sizePackageSize, payloadHex.length);
 
     measurement.packageSize = packageSizeDec;
@@ -39,6 +41,9 @@ module.exports = {
     // console.log(`payload: ${payloadHex}\t\t hex: ${packageSizeHex}\t\t\t dec: ${packageSizeDec}\t\t\t bin: ${hex2bin(packageSizeHex)}`);
 
     const packageStopHex = payloadHex.slice(-sizeStop);
+
+    if (!this.isStopHex(packageStopHex)) return null;
+
     const packageStopDec = NumberConverter.hex2dec(packageStopHex);
     payloadHex = payloadHex.slice(0, payloadHex.length - sizeStop);
 
@@ -51,6 +56,9 @@ module.exports = {
     const packageHashDec = NumberConverter.hex2dec(packageHashHex);
     payloadHex = payloadHex.slice(0, payloadHex.length - sizeHash);
 
+    // Check package hash
+    if (!this.matchHashes(packageHashDec, this.calculateHash(packageHexStringToHash))) return null;
+
     measurement.hash = packageHashDec;
 
     // console.log('Package hash:');
@@ -62,6 +70,7 @@ module.exports = {
 
       const sensorPackageSizeHex = payloadHex.slice(0, sizeSensorPackageSize);
       const sensorPackageSizeDec = NumberConverter.hex2dec(sensorPackageSizeHex);
+      const sensorPackageHexStringToHash = payloadHex.slice(0, ((sensorPackageSizeDec * hexCharsPerByte) - sizeSensorHash));
       payloadHex = payloadHex.slice(sizeSensorPackageSize, payloadHex.length);
       sensorValue.size = sensorPackageSizeDec;
 
@@ -100,17 +109,17 @@ module.exports = {
       // console.log('Sensor id:');
       // console.log(`payload: ${payloadHex}\t\t\t\t hex: ${sensorIdHex}\t\t\t dec: ${sensorIdDec}\t\t\t bin: ${hex2bin(sensorIdHex)}`);
 
-      const sensorAbsValueHex = payloadHex.slice(0, sensorAbsValueSizeDec * 2);
+      const sensorAbsValueHex = payloadHex.slice(0, sensorAbsValueSizeDec * hexCharsPerByte);
       const sensorAbsValueDec = NumberConverter.hex2dec(sensorAbsValueHex);
-      payloadHex = payloadHex.slice(sensorAbsValueSizeDec * 2, payloadHex.length);
+      payloadHex = payloadHex.slice(sensorAbsValueSizeDec * hexCharsPerByte, payloadHex.length);
       sensorValue.absValue = sensorAbsValueDec;
 
       // console.log('Sensor absolute value:');
       // console.log(`payload: ${payloadHex}\t\t\t\t hex: ${sensorAbsValueHex}\t\t\t dec: ${sensorAbsValueDec}\t\t\t bin: ${hex2bin(sensorAbsValueHex)}`);
 
-      const sensorDecValueHex = payloadHex.slice(0, sensorDecValueSizeDec * 2);
+      const sensorDecValueHex = payloadHex.slice(0, sensorDecValueSizeDec * hexCharsPerByte);
       const sensorDecValueDec = NumberConverter.hex2dec(sensorDecValueHex);
-      payloadHex = payloadHex.slice(sensorDecValueSizeDec * 2, payloadHex.length);
+      payloadHex = payloadHex.slice(sensorDecValueSizeDec * hexCharsPerByte, payloadHex.length);
       sensorValue.decValue = sensorDecValueDec;
 
       // console.log('Sensor decimal value:');
@@ -123,32 +132,31 @@ module.exports = {
       payloadHex = payloadHex.slice(sizeSensorHash, payloadHex.length);
       sensorValue.hash = sensorHashDec;
 
+      // Check sensor package hash
+      if (!this.matchHashes(sensorHashDec, this.calculateHash(sensorPackageHexStringToHash))) return null;
+
       // console.log('Sensor hash:');
       // console.log(`payload: ${payloadHex}\t\t\t\t hex: ${sensorHashHex}\t\t\t\t dec: ${sensorHashDec}\t\t\t bin: ${hex2bin(sensorHashHex)}`);
-
-      console.log(this.hash(sensorValue));
 
       measurement.sensors.push(sensorValue);
     }
 
-    if (checksSucceeded) {
-      return measurement;
-    }
-    return null;
+    return measurement;
   },
-  hash(values) {
-    let totalValue = 0;
-    let index = 0;
+  calculateHash(hexString) {
+    const hexArray = hexString.match(/.{1,2}/g);
+    let hexSum = '00';
 
-    Object.keys(values)
-      .forEach((key) => {
-        if (key !== 'hash') {
-          totalValue += values[key];
-          index += 1;
-        }
-      });
-    console.log(totalValue);
-    console.log(index);
-    console.log(totalValue / index);
+    hexArray.forEach((value) => {
+      hexSum = NumberConverter.sumHexString(hexSum, value);
+    });
+
+    return parseInt(NumberConverter.hex2dec(hexSum) / hexArray.length, 10);
+  },
+  matchHashes(hash, calculatedHash) {
+    return hash === calculatedHash;
+  },
+  isStopHex(hex) {
+    return hex.toLowerCase() === 'ff';
   },
 };
