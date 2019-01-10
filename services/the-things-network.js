@@ -28,8 +28,6 @@ module.exports = class TTNService {
               deviceValuesUpdated = true;
               break;
             case 15: // Battery
-              console.log('hit update battery');
-              console.log(sensor.value);
               device.battery = sensor.value;
               deviceValuesUpdated = true;
               break;
@@ -50,15 +48,18 @@ module.exports = class TTNService {
       if (deviceValuesUpdated) device.deviceValuesUpdatedAt = time;
       if (sensorValuesUpdated) device.sensorValuesUpdatedAt = time;
 
-      Device.findByIdAndUpdate(device._id, device, (err, res) => {
-        if (err) console.log('Device could not be updated.');
-      });
+      Device.findByIdAndUpdate(device._id, device).exec();
     }
 
     ttn.data(appKey, accessKey)
       .then((client) => {
         client.on('uplink', async (devId, payload) => {
           const data = ProtocolDecoder.decode(payload.payload_raw.toString('hex'));
+
+          if (!data) {
+            console.log('Check failed.');
+            return;
+          }
 
           let device = await Device.findOne({ appId: payload.app_id, devId: payload.dev_id });
 
@@ -70,6 +71,7 @@ module.exports = class TTNService {
               hardwareSerial: payload.hardware_serial,
             });
           }
+          console.log(data);
 
           processSensorData(data.sensors, device, payload.metadata.time);
         });
