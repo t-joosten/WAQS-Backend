@@ -82,3 +82,22 @@ exports.CheckIfDeviceExists = async (appId, deviceId) => {
     console.log(err);
   }
 };
+
+exports.GetOrCreateDevice = async (device) => {
+  try {
+    Device.findOneAndUpdate(
+      { appId: device.appId, devId: device.devId }, // find a document with that filter
+      device, // document to insert when nothing was found
+      { upsert: true, new: true, runValidators: true }, // options
+      (err, doc) => { // callback
+        if (err) {
+          console.log('Could not find or create device');
+        } else {
+          return doc;
+        }
+      },
+    );
+  } catch (e) {
+    console.log('kapot');
+  }
+};

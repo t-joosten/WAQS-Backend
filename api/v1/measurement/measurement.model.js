@@ -9,7 +9,7 @@ const measurementSchema = new mongoose.Schema({
   gateId: {
     type: Number,
   },
-  measuredTypeId: {
+  substanceId: {
     type: Number,
   },
   value: {

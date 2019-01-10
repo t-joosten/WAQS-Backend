@@ -15,19 +15,29 @@ const Device = new mongoose.Schema({
   hardwareSerial: {
     type: String,
   },
+  battery: {
+    type: Number,
+    default: 0,
+  },
+  alt: {
+    type: Number,
+    default: 0,
+  },
   lat: {
     type: Number,
+    default: 0,
   },
   long: {
     type: Number,
+    default: 0,
   },
   deviceValuesUpdatedAt: {
     type: Date,
-    default: Date.now,
+    default: null,
   },
   sensorValuesUpdatedAt: {
     type: Date,
-    default: Date.now,
+    default: null,
   },
 }, {
   timestamps: true,

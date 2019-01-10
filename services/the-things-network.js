@@ -11,68 +11,109 @@ const MeasurementController = require('../api/v1/measurement/measurement.control
 const ProtocolDecoder = require('../helpers/ProtocolDecoder');
 
 module.exports = class TTNService {
-  static connectToTTN(appKey, accessKey) {
+  static async connectToTTN(appKey, accessKey) {
     ttn.data(appKey, accessKey)
       .then((client) => {
         client.on('uplink', (devId, payload) => {
           console.log(payload);
           console.log();
 
-          const measurement = ProtocolDecoder.decode(payload.payload_raw.toString('hex'));
+          const data = ProtocolDecoder.decode(payload.payload_raw.toString('hex'));
 
-          if (measurement !== null) {
-            measurement.appId = payload.app_id;
-            measurement.devId = payload.dev_id;
-            measurement.hardwareSerial = payload.hardware_serial;
-            measurement.time = payload.metadata.time;
-          }
-          console.log();
-          console.log(measurement);
-
-          /* async function checkIfDeviceExists() {
-            const device = await DeviceController.CheckIfDeviceExists(payload.app_id, payload.dev_id);
+          async function checkIfDeviceExists() {
+            const device = await DeviceController.CheckIfDeviceExists(data.appId, data.devId);
             return device;
           }
 
           async function createOrGetDevice(foundDevice) {
-            let device;
-
             if (foundDevice) {
-              device = foundDevice;
-            } else {
-              device = await DeviceController.CreateDevice(new Device({
-                name: payload.dev_id,
-                appId: payload.app_id,
-                devId: payload.dev_id,
-                hardwareSerial: payload.hardware_serial,
-              }));
+              console.log('Device found');
+              return foundDevice;
             }
 
-            return device;
-          }
-
-          async function createLog(device) {
-            await new Log({ type: 'TTN LOG', message: payload }).save();
-            return device;
-          }
-
-          async function createMeasurement(device) {
-            if (!payload.payload_fields) { return; }
-
-            await MeasurementController.CreateMeasurement(new Measurement({
-              device: device._id,
-              values: payload.payload_fields,
+            console.log('Creating device');
+            const device = await DeviceController.CreateDevice(new Device({
+              name: data.deviceId,
+              appId: data.appId,
+              devId: data.devId,
+              hardwareSerial: data.hardwareSerial,
+              deviceValuesUpdatedAt: null,
+              sensorValuesUpdatedAt: null,
             }));
+            return device;
           }
 
-          waterfall([
-            checkIfDeviceExists,
-            createOrGetDevice,
-            createLog,
-            createMeasurement,
-          ], (err, result) => {
-            if (err) console.log(err);
-          }); */
+          async function updateDeviceAndCreateMeasurements(device) {
+            console.log(device);
+            if (data.sensors.length > 0) {
+              data.sensors.forEach((sensor) => {
+                let deviceValuesUpdated = false;
+                let sensorValuesUpdated = false;
+
+                switch (sensor.gateId) {
+                  case 13: // GPS - Longitude
+                    deviceValuesUpdated = true;
+                    break;
+                  case 14: // GPS - Latitude
+                    deviceValuesUpdated = true;
+                    break;
+                  case 15: // GPS - Altitude
+                    deviceValuesUpdated = true;
+                    break;
+                  case 16: // Battery
+                    deviceValuesUpdated = true;
+                    device.battery = sensor.value;
+                    break;
+                  default:
+                    sensorValuesUpdated = true;
+                    MeasurementController.CreateMeasurement(new Measurement({
+                      deviceId: device._id,
+                      gateId: sensor.gateId,
+                      substanceId: sensor.id,
+                      value: sensor.value,
+                      createdAt: data.time,
+                    })).then((test) => {
+                      console.log(test);
+                    });
+                    break;
+                }
+
+                if (deviceValuesUpdated) device.deviceValuesUpdatedAt = data.time;
+                if (sensorValuesUpdated) device.sensorValuesUpdatedAt = data.time;
+
+                Device.findByIdAndUpdate(device._id, device, (err, res) => {
+                  if (err) {
+                    console.log('Device could not be updated.');
+                  }
+                  console.log(res);
+                });
+              });
+            }
+          }
+
+          console.log('data');
+          console.log(data);
+
+          if (data !== null) {
+            data.appId = payload.app_id;
+            data.devId = payload.dev_id;
+            data.hardwareSerial = payload.hardware_serial;
+            data.time = payload.metadata.time;
+            console.log(data);
+
+            await checkIfDeviceExists,
+              createOrGetDevice,
+              updateDeviceAndCreateMeasurements,
+
+
+              waterfall([
+              checkIfDeviceExists,
+              createOrGetDevice,
+              updateDeviceAndCreateMeasurements,
+            ], (err, result) => {
+              if (err) console.log(err);
+            });
+          }
         });
       })
       .catch((error) => {

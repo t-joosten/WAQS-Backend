@@ -14,7 +14,7 @@ module.exports = {
     const sizeSensorGate = 1;
     const sizeSensorAbsoluteValueSize = 1;
     const sizeSensorDecimalValueSize = 1;
-    const sizeSensorId = 2;
+    const sizeSensorSubstanceId = 2;
     const sizeSensorHash = 2;
 
     const measurement = {};
@@ -101,10 +101,10 @@ module.exports = {
       // console.log('Sensor decimal value size:');
       // console.log(`payload: ${payloadHex}\t\t\t hex: ${sensorDecValueSizeHex}\t\t\t\t dec: ${sensorDecValueSizeDec}\t\t\t bin: ${hex2bin(sensorDecValueSizeHex)}`);
 
-      const sensorIdHex = payloadHex.slice(0, sizeSensorId);
-      const sensorIdDec = NumberConverter.hex2dec(sensorIdHex);
-      payloadHex = payloadHex.slice(sizeSensorId, payloadHex.length);
-      sensorValue.id = sensorIdDec;
+      const sensorSubstanceIdHex = payloadHex.slice(0, sizeSensorSubstanceId);
+      const sensorSubstanceIdDec = NumberConverter.hex2dec(sensorSubstanceIdHex);
+      payloadHex = payloadHex.slice(sizeSensorSubstanceId, payloadHex.length);
+      sensorValue.substanceId = sensorSubstanceIdDec;
 
       // console.log('Sensor id:');
       // console.log(`payload: ${payloadHex}\t\t\t\t hex: ${sensorIdHex}\t\t\t dec: ${sensorIdDec}\t\t\t bin: ${hex2bin(sensorIdHex)}`);
