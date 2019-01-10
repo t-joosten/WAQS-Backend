@@ -29,15 +29,12 @@ exports.GetDevices = (req, res) => {
   }
 };
 
-exports.CreateDevice = async (newDevice) => {
+exports.CreateDevice = async (device) => {
   try {
-    let device;
-
-    await newDevice.save((err, createdDevice) => {
-      device = createdDevice;
+    await Device.create(device, (err, createdDevice) => {
+      if (err) return console.log(err);
+      return createdDevice;
     });
-
-    return device;
   } catch (err) {
     console.log(err);
   }

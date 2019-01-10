@@ -117,15 +117,20 @@ module.exports = {
       // console.log('Sensor absolute value:');
       // console.log(`payload: ${payloadHex}\t\t\t\t hex: ${sensorAbsValueHex}\t\t\t dec: ${sensorAbsValueDec}\t\t\t bin: ${hex2bin(sensorAbsValueHex)}`);
 
-      const sensorDecValueHex = payloadHex.slice(0, sensorDecValueSizeDec * hexCharsPerByte);
-      const sensorDecValueDec = NumberConverter.hex2dec(sensorDecValueHex);
-      payloadHex = payloadHex.slice(sensorDecValueSizeDec * hexCharsPerByte, payloadHex.length);
-      sensorValue.decValue = sensorDecValueDec;
+      if (sensorDecValueSizeDec !== 0) {
+        const sensorDecValueHex = payloadHex.slice(0, sensorDecValueSizeDec * hexCharsPerByte);
+        const sensorDecValueDec = NumberConverter.hex2dec(sensorDecValueHex);
+        payloadHex = payloadHex.slice(sensorDecValueSizeDec * hexCharsPerByte, payloadHex.length);
+        sensorValue.decValue = sensorDecValueDec;
+
+        sensorValue.value = `${sensorValue.absValue}.${sensorValue.decValue}`;
+      } else {
+        sensorValue.value = sensorValue.absValue;
+      }
 
       // console.log('Sensor decimal value:');
       // console.log(`payload: ${payloadHex}\t\t\t\t hex: ${sensorDecValueHex}\t\t\t\t dec: ${sensorDecValueDec}\t\t\t bin: ${hex2bin(sensorDecValueHex)}`);
 
-      sensorValue.value = `${sensorValue.absValue}.${sensorValue.decValue}`;
 
       const sensorHashHex = payloadHex.slice(0, sizeSensorHash);
       const sensorHashDec = NumberConverter.hex2dec(sensorHashHex);
