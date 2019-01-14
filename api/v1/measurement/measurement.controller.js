@@ -21,7 +21,7 @@ exports.GetMeasurementsByDevice = async (req, res) => {
     // const lastDate = req.params.last_date;
 
     await Measurement.find({ deviceId })
-      // .where('createdAt').gte(firstDate).lte(lastDate)
+    // .where('createdAt').gte(firstDate).lte(lastDate)
       .exec((err, result) => {
         if (err) res.status(404).send(err);
         res.json(result);
@@ -34,11 +34,35 @@ exports.GetMeasurementsByDevice = async (req, res) => {
 exports.GetLastMeasurementsByDevice = (req, res) => {
   const deviceId = req.params.id;
   console.log(deviceId);
-  Measurement.aggregate([{ $match: { deviceId } }, { $sort: { createdAt: -1 } }, { $group: { _id: '$gateId' } }])
+
+  Promise.all([
+    Measurement.findOne({ deviceId, gateId: 1 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({ deviceId, gateId: 2 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({ deviceId, gateId: 3 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({ deviceId, gateId: 4 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({ deviceId, gateId: 5 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({ deviceId, gateId: 6 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+  ])
+    .then((results) => {
+      console.log(results);
+      const measurements = results.filter(el => el != null);
+      res.json(measurements);
+    })
+    .catch((err) => {
+      console.error('Something went wrong', err);
+    });
+
+  /* return Measurement.findOne({ deviceId, gateId: 1 }).sort({ createdAt: -1 }).exec((err, measurement) => {
+    if (err) res.send(err);
+    res.json(measurement);
+  }); */
+
+
+  /* Measurement.aggregate([{ $match: { deviceId } }, { $sort: { createdAt: -1 } }, { $group: { _id: '$gateId' } }])
     .then((docs) => {
       console.log(docs);
       res.json(docs);
-    });
+    }); */
 
 
   /* .exec((err, result) => {

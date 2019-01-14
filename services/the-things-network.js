@@ -36,7 +36,7 @@ module.exports = class TTNService {
               Measurement.create({
                 deviceId: device._id,
                 gateId: sensor.gateId,
-                substanceId: sensor.id,
+                substanceId: sensor.substanceId,
                 value: sensor.value,
                 createdAt: time,
               });
