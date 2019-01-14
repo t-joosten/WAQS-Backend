@@ -42,6 +42,7 @@ exports.CreateDevice = async (device) => {
 
 exports.UpdateDevice = (req, res, next) => {
   try {
+    if (req.body.updatedAt) req.body.updatedAt = new Date();
     Device.findByIdAndUpdate(req.params.id, req.body, (err, device) => {
       if (err) {
         res.json({ success: false, message: 'Device could not be updated.' });
