@@ -12,6 +12,6 @@ router.route('/:id')
   .get(measurement.GetMeasurementsByDevice);
 
 router.route('/:id/last')
-  .get(measurement.GetLastMeasurementByDevice);
+  .get(measurement.GetLastMeasurementsByDevice);
 
 module.exports = router;

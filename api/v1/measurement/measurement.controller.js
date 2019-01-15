@@ -13,30 +13,68 @@ exports.GetMeasurements = (req, res) => {
   }
 };
 
-exports.GetMeasurementsByDevice = (req, res) => {
-  const deviceId = req.params.id;
-  // const firstDate = req.params.first_date;
-  // const lastDate = req.params.last_date;
+exports.GetMeasurementsByDevice = async (req, res) => {
   try {
-    Measurement
-      .find({ device: deviceId })
-      // .where('createdAt').gte(firstDate).lte(lastDate)
+    const deviceId = req.params.id;
+
+    // const firstDate = req.params.first_date;
+    // const lastDate = req.params.last_date;
+
+    await Measurement.find({ deviceId })
+    // .where('createdAt').gte(firstDate).lte(lastDate)
       .exec((err, result) => {
-        if (err) res.send(err);
+        if (err) res.status(404).send(err);
         res.json(result);
       });
   } catch (err) {
-    res.json({ message: 'Something went wrong with getting the measurements.' });
+    res.status(500).json({ message: 'Something went wrong with getting the measurements.' });
   }
 };
 
-exports.GetLastMeasurementByDevice = (req, res) => {
+exports.GetLastMeasurementsByDevice = (req, res) => {
   const deviceId = req.params.id;
+  console.log(deviceId);
 
-  Measurement.findOne({ device: deviceId }).sort({ createdAt: -1 }).exec((err, result) => {
+  Promise.all([
+    Measurement.findOne({ deviceId, gateId: 1 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({ deviceId, gateId: 2 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({ deviceId, gateId: 3 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({ deviceId, gateId: 4 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({ deviceId, gateId: 5 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({ deviceId, gateId: 6 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+  ])
+    .then((results) => {
+      console.log(results);
+      const measurements = results.filter(el => el != null);
+      res.json(measurements);
+    })
+    .catch((err) => {
+      console.error('Something went wrong', err);
+    });
+
+  /* return Measurement.findOne({ deviceId, gateId: 1 }).sort({ createdAt: -1 }).exec((err, measurement) => {
+    if (err) res.send(err);
+    res.json(measurement);
+  }); */
+
+
+  /* Measurement.aggregate([{ $match: { deviceId } }, { $sort: { createdAt: -1 } }, { $group: { _id: '$gateId' } }])
+    .then((docs) => {
+      console.log(docs);
+      res.json(docs);
+    }); */
+
+
+  /* .exec((err, result) => {
+    if (err) res.send(err);
+    console.log(result);
+    res.json(result);
+  }); */
+
+  /* Measurement.find({ deviceId }).sort({ createdAt: -1 }).exec((err, result) => {
     if (err) res.send(err);
     res.json(result);
-  });
+  }); */
 };
 
 exports.CreateMeasurement = async (newMeasurement) => {

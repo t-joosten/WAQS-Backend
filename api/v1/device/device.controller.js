@@ -29,15 +29,12 @@ exports.GetDevices = (req, res) => {
   }
 };
 
-exports.CreateDevice = async (newDevice) => {
+exports.CreateDevice = async (device) => {
   try {
-    let device;
-
-    await newDevice.save((err, createdDevice) => {
-      device = createdDevice;
+    await Device.create(device, (err, createdDevice) => {
+      if (err) return console.log(err);
+      return createdDevice;
     });
-
-    return device;
   } catch (err) {
     console.log(err);
   }
@@ -45,6 +42,7 @@ exports.CreateDevice = async (newDevice) => {
 
 exports.UpdateDevice = (req, res, next) => {
   try {
+    if (req.body.updatedAt) req.body.updatedAt = new Date();
     Device.findByIdAndUpdate(req.params.id, req.body, (err, device) => {
       if (err) {
         res.json({ success: false, message: 'Device could not be updated.' });
@@ -80,5 +78,24 @@ exports.CheckIfDeviceExists = async (appId, deviceId) => {
     return device;
   } catch (err) {
     console.log(err);
+  }
+};
+
+exports.GetOrCreateDevice = async (device) => {
+  try {
+    Device.findOneAndUpdate(
+      { appId: device.appId, devId: device.devId }, // find a document with that filter
+      device, // document to insert when nothing was found
+      { upsert: true, new: true, runValidators: true }, // options
+      (err, doc) => { // callback
+        if (err) {
+          console.log('Could not find or create device');
+        } else {
+          return doc;
+        }
+      },
+    );
+  } catch (e) {
+    console.log('kapot');
   }
 };
