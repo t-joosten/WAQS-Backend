@@ -51,30 +51,6 @@ exports.GetLastMeasurementsByDevice = (req, res) => {
     .catch((err) => {
       console.error('Something went wrong', err);
     });
-
-  /* return Measurement.findOne({ deviceId, gateId: 1 }).sort({ createdAt: -1 }).exec((err, measurement) => {
-    if (err) res.send(err);
-    res.json(measurement);
-  }); */
-
-
-  /* Measurement.aggregate([{ $match: { deviceId } }, { $sort: { createdAt: -1 } }, { $group: { _id: '$gateId' } }])
-    .then((docs) => {
-      console.log(docs);
-      res.json(docs);
-    }); */
-
-
-  /* .exec((err, result) => {
-    if (err) res.send(err);
-    console.log(result);
-    res.json(result);
-  }); */
-
-  /* Measurement.find({ deviceId }).sort({ createdAt: -1 }).exec((err, result) => {
-    if (err) res.send(err);
-    res.json(result);
-  }); */
 };
 
 exports.CreateMeasurement = async (newMeasurement) => {

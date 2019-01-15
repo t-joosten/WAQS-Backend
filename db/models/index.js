@@ -1,1 +1,1 @@
-require('./log');
+require('../../models/log');
