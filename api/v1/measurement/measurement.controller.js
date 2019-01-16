@@ -36,17 +36,80 @@ exports.GetLastMeasurementsByDevice = (req, res) => {
   console.log(deviceId);
 
   Promise.all([
-    Measurement.findOne({ deviceId, gateId: 1 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
-    Measurement.findOne({ deviceId, gateId: 2 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
-    Measurement.findOne({ deviceId, gateId: 3 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
-    Measurement.findOne({ deviceId, gateId: 4 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
-    Measurement.findOne({ deviceId, gateId: 5 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
-    Measurement.findOne({ deviceId, gateId: 6 }).sort({ createdAt: -1 }).select('gateId value substanceId').exec(),
+    Measurement.findOne({
+      deviceId,
+      gateId: 1,
+    }).sort({ createdAt: -1 }).select('gateId value substanceId createdAt').exec(),
+    Measurement.findOne({
+      deviceId,
+      gateId: 2,
+    }).sort({ createdAt: -1 }).select('gateId value substanceId createdAt').exec(),
+    Measurement.findOne({
+      deviceId,
+      gateId: 3,
+    }).sort({ createdAt: -1 }).select('gateId value substanceId createdAt').exec(),
+    Measurement.findOne({
+      deviceId,
+      gateId: 4,
+    }).sort({ createdAt: -1 }).select('gateId value substanceId createdAt').exec(),
+    Measurement.findOne({
+      deviceId,
+      gateId: 5,
+    }).sort({ createdAt: -1 }).select('gateId value substanceId createdAt').exec(),
+    Measurement.findOne({
+      deviceId,
+      gateId: 6,
+    }).sort({ createdAt: -1 }).select('gateId value substanceId createdAt').exec(),
   ])
     .then((results) => {
-      console.log(results);
+      // console.log(results);
       const measurements = results.filter(el => el != null);
       res.json(measurements);
+    })
+    .catch((err) => {
+      console.error('Something went wrong', err);
+    });
+};
+
+exports.GetLastThreeDayMeasurements = (req, res) => {
+  const deviceId = req.params.id;
+  console.log(deviceId);
+
+  function addDays(date, days) {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
+  Promise.all([
+    Measurement.findOne({ deviceId, gateId: 1 }).select('gateId value substanceId createdAt').exec(),
+    Measurement.findOne({ deviceId, gateId: 2 }).select('gateId value substanceId createdAt').exec(),
+    Measurement.findOne({ deviceId, gateId: 3 }).select('gateId value substanceId createdAt').exec(),
+    Measurement.findOne({ deviceId, gateId: 4 }).select('gateId value substanceId createdAt').exec(),
+    Measurement.findOne({ deviceId, gateId: 5 }).select('gateId value substanceId createdAt').exec(),
+    Measurement.findOne({ deviceId, gateId: 6 }).select('gateId value substanceId createdAt').exec(),
+  ])
+    .then((results) => {
+      const measurements = results.filter(el => el != null);
+      const measurementPromises = [];
+
+      measurements.forEach((measurement) => {
+        measurementPromises.push(Measurement.find({
+          deviceId,
+          gateId: measurement.gateId,
+          substanceId: measurement.substanceId,
+          createdAt: { $gte: addDays(new Date(), -7), $lt: new Date() },
+        }).sort({ createdAt: -1 }).exec());
+      });
+
+      Promise.all(measurementPromises)
+        .then((data) => {
+          console.log(results);
+          res.json(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })
     .catch((err) => {
       console.error('Something went wrong', err);

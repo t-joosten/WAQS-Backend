@@ -62,14 +62,24 @@ app.use('/', routes);
 
 app.use(passport.initialize());
 
+function addDays(date, days) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
 app.use('/create-test-data', async (req, res) => {
-  const startDate = new Date(2018, 1, 1, 0, 0, 0);
-  const currentDate = new Date(2018, 1, 1, 0, 0, 0);
+  const startDate = addDays(new Date(), -30);
+  const currentDate = new Date();
 
   Device.create({
     name: 'IOT Stadslab',
     appId: 'iot_lab',
     devId: 'device_1',
+    deviceValuesUpdatedAt: Date.now(),
+    sensorValuesUpdatedAt: Date.now(),
+    battery: 56,
+    alt: 5,
     lat: 51.682369,
     long: 5.295309,
     hardwareSerial: '00E12B4CEABA61AD',
@@ -77,15 +87,14 @@ app.use('/create-test-data', async (req, res) => {
     if (err) return console.log(err);
     for (let i = 0; i <= 300; i += 1) {
       Measurement.create({
-        device: createdDevice._id,
+        gateId: 1,
+        deviceId: createdDevice._id,
         createdAt: new Date(startDate.getTime() + (i * 86400000)),
-        values: {
-          Temperature: Math.floor((Math.random() * 4) + 19),
-          pH: Math.floor((Math.random() * 5) + 3),
-          O2: Math.floor((Math.random() * 8) + 5),
-        },
-      }, (err, createdMeasurement) => {
-        if (err) return console.log(err);
+        value: Math.floor((Math.random() * 4) + 19),
+        substanceId: 1,
+      },
+      (errM, createdMeasurement) => {
+        if (errM) return console.log(errM);
       });
       currentDate.setDate(currentDate.getDate() + 1);
     }
