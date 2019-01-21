@@ -3,7 +3,7 @@ const router = express.Router();
 
 const measurement = require('./measurement.controller');
 
-// Device routes
+// Measurement routes
 router.route('/')
   .get(measurement.GetMeasurements);
 // .post(device.CreateDevice);
@@ -13,5 +13,11 @@ router.route('/:id')
 
 router.route('/:id/last')
   .get(measurement.GetLastMeasurementsByDevice);
+
+router.route('/:id/three-days')
+  .get(measurement.GetLastThreeDayMeasurements);
+
+router.route('/:id/export')
+  .get(measurement.Export);
 
 module.exports = router;
