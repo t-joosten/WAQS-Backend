@@ -39,6 +39,8 @@ module.exports = class TTNService {
                 substanceId: sensor.substanceId,
                 value: sensor.value,
                 createdAt: time,
+              }).then((measurement) => {
+                io.emit(`device/${deviceToUpdate._id}/measurement`, measurement);
               });
               break;
           }
@@ -48,7 +50,9 @@ module.exports = class TTNService {
       if (deviceValuesUpdated) device.deviceValuesUpdatedAt = time;
       if (sensorValuesUpdated) device.sensorValuesUpdatedAt = time;
 
-      Device.findByIdAndUpdate(device._id, device).exec();
+      Device.findByIdAndUpdate(device._id, device).exec().then((res) => {
+        io.emit(`device/${deviceToUpdate._id}`, { device: deviceToUpdate });
+      });
     }
 
     ttn.data(appKey, accessKey)

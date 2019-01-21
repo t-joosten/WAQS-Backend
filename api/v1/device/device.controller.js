@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Device = require('./device.model');
+const Measurement = require('../measurement/measurement.model');
 
 exports.GetDevice = (req, res) => {
   Device.findById(req.params.id, (err, device) => {
@@ -60,6 +61,9 @@ exports.DeleteDevice = (req, res, next) => {
       if (err) {
         res.json({ success: false, message: 'Device could not be deleted.' });
       }
+      Measurement.remove({ deviceId: req.params.id }, (err) => {
+        if (err) console.log(err);
+      });
       res.json({ success: true, message: 'Device has been deleted.' });
     });
   } catch (err) {

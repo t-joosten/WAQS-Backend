@@ -36,10 +36,16 @@ app.use(cors(corsOptions));
 
 /** Connect to MongoDB. */
 if (process.env.NODE_ENV !== 'production') {
-  mongoose.connect(process.env.MONGODB_URI_DEV, { useNewUrlParser: true, promiseLibrary: require('bluebird') }).then(() => console.log('connection succesful'))
+  mongoose.connect(process.env.MONGODB_URI_DEV, {
+    useNewUrlParser: true,
+    promiseLibrary: require('bluebird'),
+  }).then(() => console.log('connection succesful'))
     .catch(err => console.error(err));
 } else {
-  mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, promiseLibrary: require('bluebird') }).then(() => console.log('connection succesful'))
+  mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    promiseLibrary: require('bluebird'),
+  }).then(() => console.log('connection succesful'))
     .catch(err => console.error(err));
 }
 
@@ -87,11 +93,11 @@ app.use('/create-test-data', async (req, res) => {
     if (err) return console.log(err);
     for (let i = 0; i <= 300; i += 1) {
       Measurement.create({
-        gateId: 1,
+        gateId: 2,
         deviceId: createdDevice._id,
         createdAt: new Date(startDate.getTime() + (i * 86400000)),
         value: Math.floor((Math.random() * 4) + 19),
-        substanceId: 1,
+        substanceId: 3,
       },
       (errM, createdMeasurement) => {
         if (errM) return console.log(errM);
@@ -101,6 +107,31 @@ app.use('/create-test-data', async (req, res) => {
 
     res.send('done');
   });
+});
+
+app.use('/device/:id', async (req, res) => {
+  const startDate = addDays(new Date(), -30);
+  const currentDate = new Date();
+
+  for (let i = 0; i <= 300; i += 1) {
+    Measurement.create({
+      gateId: 4,
+      deviceId: req.params.id,
+      createdAt: new Date(startDate.getTime() + (i * 86400000)),
+      value: Math.floor((Math.random() * 4) + 19),
+      substanceId: 2,
+    },
+    (errM, createdMeasurement) => {
+      if (errM) return console.log(errM);
+    });
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  res.send('done');
+});
+
+app.get('/ttn', (req, res) => {
+  res.send('<input />');
 });
 
 io.on('connection', (socket) => {
