@@ -17,4 +17,7 @@ router.route('/:id/last')
 router.route('/:id/three-days')
   .get(measurement.GetLastThreeDayMeasurements);
 
+router.route('/:id/export')
+  .get(measurement.Export);
+
 module.exports = router;

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Json2csvParser = require('json2csv').Parser;
 const Measurement = require('./measurement.model');
 const Device = require('../device/device.model');
 
@@ -69,6 +70,20 @@ exports.GetLastMeasurementsByDevice = (req, res) => {
     .catch((err) => {
       console.error('Something went wrong', err);
     });
+};
+
+exports.Export = (req, res) => {
+  const deviceId = req.params.id;
+
+  const fields = [{ value: 'createdAt', label: 'Datum' }, { value: 'gateId', label: 'Gate' }, { value: 'substanceId', label: 'Stofgroep' }, { value: 'value', label: 'Waarde' }];
+
+  Measurement.find({ deviceId }).select('gateId value substanceId createdAt').exec().then((measurements) => {
+    const json2csvParser = new Json2csvParser({ fields });
+    const csv = json2csvParser.parse(measurements);
+
+    res.attachment(`${deviceId}.csv`);
+    res.status(200).send(csv);
+  });
 };
 
 exports.GetLastThreeDayMeasurements = (req, res) => {
