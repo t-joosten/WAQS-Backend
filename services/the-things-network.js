@@ -2,7 +2,7 @@
 const ttn = require('ttn');
 
 const mongoose = require('mongoose');
-const Log = mongoose.model('Log');
+// const Log = mongoose.model('Log');
 const Device = mongoose.model('Device');
 const Measurement = mongoose.model('Measurement');
 

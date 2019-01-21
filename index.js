@@ -5,7 +5,6 @@ require('dotenv').config();
 const chalk = require('chalk');
 const cors = require('cors');
 
-require('./db/models/index');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const passport = require('passport');
