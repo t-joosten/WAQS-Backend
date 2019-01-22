@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Copy default env variables, so it can be used immediately after pulling from the repository.
-COPY .env.default .env
+COPY .env.example .env
 
 # Install dependancies to Alpine
 RUN npm install
