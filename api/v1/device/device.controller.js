@@ -100,6 +100,6 @@ exports.GetOrCreateDevice = async (device) => {
       },
     );
   } catch (e) {
-    console.log('kapot');
+    console.log('Can not create device.');
   }
 };

@@ -40,7 +40,6 @@ exports.Login = (req, res) => {
   User.findOne({
     email: req.body.email,
   }, (err, user) => {
-    console.log(user);
     if (err) throw err;
 
     if (!user) {

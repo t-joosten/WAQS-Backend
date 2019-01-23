@@ -34,7 +34,6 @@ exports.GetMeasurementsByDevice = async (req, res) => {
 
 exports.GetLastMeasurementsByDevice = (req, res) => {
   const deviceId = req.params.id;
-  console.log(deviceId);
 
   Promise.all([
     Measurement.findOne({
@@ -88,7 +87,6 @@ exports.Export = (req, res) => {
 
 exports.GetLastThreeDayMeasurements = (req, res) => {
   const deviceId = req.params.id;
-  console.log(deviceId);
 
   function addDays(date, days) {
     const result = new Date(date);
@@ -119,7 +117,6 @@ exports.GetLastThreeDayMeasurements = (req, res) => {
 
       Promise.all(measurementPromises)
         .then((data) => {
-          console.log(results);
           res.json(data);
         })
         .catch((err) => {
