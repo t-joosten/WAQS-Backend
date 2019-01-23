@@ -9,11 +9,14 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const bodyParser = require('body-parser');
+const swaggerUi = require('swagger-ui-express');
 const Measurement = require('./api/v1/measurement/measurement.model');
 const Device = require('./api/v1/device/device.model');
 const routes = require('./routes');
 const apiRoutes = require('./api/v1/routes');
 const services = require('./services');
+
+const swaggerDocument = require('./swagger.json');
 
 mongoose.Promise = require('bluebird');
 
@@ -62,6 +65,7 @@ try {
 }
 
 /** Connect all our routes to our application */
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/v1', apiRoutes);
 app.use('/', routes);
 
@@ -129,15 +133,11 @@ app.use('/device/:id', async (req, res) => {
   res.send('done');
 });
 
-app.get('/ttn', (req, res) => {
-  res.send('<input />');
-});
-
 io.on('connection', (socket) => {
   console.log('a user connected');
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    console.log(' user disconnected');
   });
 });
 
-server.listen(process.env.PORT || 4000, () => console.log(`App listening on port ${process.env.PORT}, open your browser on http://localhost:${process.env.PORT}/`));
+server.listen(process.env.PORT || 4010, () => console.log(`App listening on port ${process.env.PORT}, open your browser on http://localhost:${process.env.PORT}/`));

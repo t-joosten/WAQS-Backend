@@ -26,10 +26,12 @@
     "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.3.16",
     "mongoose-paginate": "^5.0.3",
+    "mongoose-to-swagger": "0.0.4",
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "socket.io": "^2.1.1",
+    "swagger-ui-express": "^4.0.2",
     "ttn": "^2.3.1"
   },
   "devDependencies": {

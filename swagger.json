@@ -1,0 +1,554 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is the documentation for https://dashboard.waqs.nl",
+    "version": "1.0.0",
+    "title": "WAQS - API",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "info@iotstadslab.nl"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "api.waqs.nl",
+  "basePath": "/api/v1",
+  "tags": [
+    {
+      "name": "devices",
+      "description": ""
+    },
+    {
+      "name": "measurements",
+      "description": ""
+    },
+    {
+      "name": "users",
+      "description": ""
+    }
+  ],
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/devices": {
+      "get": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Get all devices",
+        "description": "",
+        "operationId": "getDevices",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Device"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/{deviceId}": {
+      "get": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Get device",
+        "description": "",
+        "operationId": "getDevice",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deviceId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Document ID of the device to get"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Device"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Update device",
+        "description": "",
+        "operationId": "updateDevice",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deviceId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Document ID of the device to get"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Device"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Delete device",
+        "description": "",
+        "operationId": "deleteDevice",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deviceId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Document ID of the device to get"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/measurements": {
+      "get": {
+        "tags": [
+          "measurements"
+        ],
+        "summary": "Get measurements",
+        "description": "",
+        "operationId": "getMeasurements",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Measurement"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/measurements/{deviceId}": {
+      "get": {
+        "tags": [
+          "measurements"
+        ],
+        "summary": "Get measurements by device ID",
+        "description": "",
+        "operationId": "getMeasurementsByDevice",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deviceId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Document ID of the device to get measurements of."
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Measurement"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/measurements/{deviceId}/last": {
+      "get": {
+        "tags": [
+          "measurements"
+        ],
+        "summary": "Get measurements by device ID",
+        "description": "",
+        "operationId": "getLastMeasurementsByDevice",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deviceId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Document ID of the device to get measurements of."
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Measurement"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/measurements/{deviceId}/three-days": {
+      "get": {
+        "tags": [
+          "measurements"
+        ],
+        "summary": "Get last three day measurements by device ID",
+        "description": "",
+        "operationId": "getLastThreeDayMeasurementsByDevice",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deviceId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Document ID of the device to get measurements of."
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Measurement"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/measurements/{deviceId}/export": {
+      "get": {
+        "tags": [
+          "measurements"
+        ],
+        "summary": "Exports all device measurements",
+        "description": "",
+        "operationId": "export",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "deviceId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Document ID of the device to get measurements of."
+          }
+        ],
+        "produces": [
+          "text/csv"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get all users",
+        "description": "",
+        "operationId": "getUsers",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "put": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update user",
+        "description": "",
+        "operationId": "updateUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Document ID of the user."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Delete user",
+        "description": "",
+        "operationId": "deleteUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Document ID of the user."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Device": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "String"
+        },
+        "name": {
+          "type": "string",
+          "format": "String"
+        },
+        "appId": {
+          "type": "string",
+          "format": "String"
+        },
+        "hardwareSerial": {
+          "type": "string",
+          "format": "String"
+        },
+        "battery": {
+          "type": "number",
+          "format": "Number"
+        },
+        "alt": {
+          "type": "number",
+          "format": "Number"
+        },
+        "lat": {
+          "type": "number",
+          "format": "Number"
+        },
+        "long": {
+          "type": "number",
+          "format": "Number"
+        },
+        "deviceValuesUpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sensorValuesUpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "xml": {
+        "name": "Device"
+      }
+    },
+    "Measurement": {
+      "type": "object",
+      "properties": {
+        "deviceId": {
+          "type": "string",
+          "format": "String"
+        },
+        "gateId": {
+          "type": "number",
+          "format": "Number"
+        },
+        "substanceId": {
+          "type": "number",
+          "format": "Number"
+        },
+        "value": {
+          "type": "number",
+          "format": "Number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "xml": {
+        "name": "Measurement"
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "String"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "admin",
+            "user"
+          ]
+        },
+        "isActive": {
+          "type": "integer",
+          "format": "number",
+          "enum": [
+            0,
+            1
+          ]
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  }
+}
