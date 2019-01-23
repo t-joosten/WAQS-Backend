@@ -75,7 +75,7 @@ module.exports = class TTNService {
               hardwareSerial: payload.hardware_serial,
             });
           }
-          console.log(data);
+          // console.log(data);
 
           processSensorData(data.sensors, device, payload.metadata.time);
         });

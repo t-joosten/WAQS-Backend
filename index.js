@@ -23,6 +23,8 @@ mongoose.Promise = require('bluebird');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: 'false' }));
 
+const dburl = process.env.MONGODB_URI;
+
 /** Setup CORS */
 // const whitelist = ['http://localhost:4200', 'undefined'];
 const corsOptions = {
@@ -36,26 +38,24 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-/** Connect to MongoDB. */
-if (process.env.NODE_ENV !== 'production') {
-  mongoose.connect(process.env.MONGODB_URI_DEV, {
-    useNewUrlParser: true,
-    promiseLibrary: require('bluebird'),
-  }).then(() => console.log('connection succesful'))
-    .catch(err => console.error(err));
-} else {
-  mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    promiseLibrary: require('bluebird'),
-  }).then(() => console.log('connection succesful'))
-    .catch(err => console.error(err));
-}
+const options = {
+  useNewUrlParser: true,
+  reconnectTries: 30, // Retry up to 30 times
+  reconnectInterval: 500, // Reconnect every 500ms
+  bufferMaxEntries: 0,
+};
 
-mongoose.connection.on('error', (err) => {
-  console.error(err);
-  console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
-  process.exit();
-});
+const connectWithRetry = () => {
+  console.log('MongoDB connection with retry');
+  mongoose.connect(dburl, options).then(() => {
+    console.log('MongoDB is connected');
+  }).catch((err) => {
+    console.log('MongoDB connection unsuccessful, retry after 5 seconds.');
+    setTimeout(connectWithRetry, 5000);
+  });
+};
+
+connectWithRetry();
 
 /** Initiate connection with The Things Network */
 try {
@@ -71,7 +71,7 @@ app.use('/', routes);
 
 app.use(passport.initialize());
 
-function addDays(date, days) {
+/* function addDays(date, days) {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
@@ -139,5 +139,6 @@ io.on('connection', (socket) => {
     console.log(' user disconnected');
   });
 });
+*/
 
 server.listen(process.env.PORT || 4010, () => console.log(`App listening on port ${process.env.PORT}, open your browser on http://localhost:${process.env.PORT}/`));
